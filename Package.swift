@@ -3,8 +3,8 @@ import PackageDescription
 
 let package = Package(
     name: "jwt-kit",
-    platforms: [
-        .macOS(.v10_15)
+    platforms: [.iOS(.v13),
+                .macOS(.v10_15)
     ],
     products: [
         .library(name: "JWTKit", targets: ["JWTKit"]),
