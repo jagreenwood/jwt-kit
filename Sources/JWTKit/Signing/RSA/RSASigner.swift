@@ -1,4 +1,4 @@
-import CJWTKitBoringSSL
+import CCryptoBoringSSL
 import struct Foundation.Data
 
 internal struct RSASigner: JWTAlgorithm, OpenSSLSigner {
@@ -15,12 +15,12 @@ internal struct RSASigner: JWTAlgorithm, OpenSSLSigner {
         var signatureLength: UInt32 = 0
         var signature = [UInt8](
             repeating: 0,
-            count: Int(CJWTKitBoringSSL_RSA_size(key.c))
+            count: Int(CCryptoBoringSSL_RSA_size(key.c))
         )
 
         let digest = try self.digest(plaintext)
-        guard CJWTKitBoringSSL_RSA_sign(
-            CJWTKitBoringSSL_EVP_MD_type(self.algorithm),
+        guard CCryptoBoringSSL_RSA_sign(
+            CCryptoBoringSSL_EVP_MD_type(self.algorithm),
             digest,
             numericCast(digest.count),
             &signature,
@@ -41,8 +41,8 @@ internal struct RSASigner: JWTAlgorithm, OpenSSLSigner {
     {
         let digest = try self.digest(plaintext)
         let signature = signature.copyBytes()
-        return CJWTKitBoringSSL_RSA_verify(
-            CJWTKitBoringSSL_EVP_MD_type(self.algorithm),
+        return CCryptoBoringSSL_RSA_verify(
+            CCryptoBoringSSL_EVP_MD_type(self.algorithm),
             digest,
             numericCast(digest.count),
             signature,

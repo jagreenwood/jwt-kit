@@ -1,10 +1,10 @@
-import CJWTKitBoringSSL
+import CCryptoBoringSSL
 
 extension JWTSigner {
     public static func rs256(key: RSAKey) -> JWTSigner {
         return .init(algorithm: RSASigner(
             key: key,
-            algorithm: CJWTKitBoringSSL_EVP_sha256(),
+            algorithm: CCryptoBoringSSL_EVP_sha256(),
             name: "RS256"
         ))
     }
@@ -12,7 +12,7 @@ extension JWTSigner {
     public static func rs384(key: RSAKey) -> JWTSigner {
         return .init(algorithm: RSASigner(
             key: key,
-            algorithm: CJWTKitBoringSSL_EVP_sha384(),
+            algorithm: CCryptoBoringSSL_EVP_sha384(),
             name: "RS384"
         ))
     }
@@ -20,7 +20,7 @@ extension JWTSigner {
     public static func rs512(key: RSAKey) -> JWTSigner {
         return .init(algorithm: RSASigner(
             key: key,
-            algorithm: CJWTKitBoringSSL_EVP_sha512(),
+            algorithm: CCryptoBoringSSL_EVP_sha512(),
             name: "RS512"
         ))
     }

@@ -1,4 +1,4 @@
-import CJWTKitBoringSSL
+import CCryptoBoringSSL
 import Crypto
 
 extension JWTSigner {

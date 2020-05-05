@@ -1,4 +1,4 @@
-import CJWTKitBoringSSL
+import CCryptoBoringSSL
 import struct Foundation.Data
 
 public final class RSAKey: OpenSSLKey {
@@ -6,11 +6,11 @@ public final class RSAKey: OpenSSLKey {
         where Data: DataProtocol
     {
         let pkey = try self.load(pem: data) { bio in
-            CJWTKitBoringSSL_PEM_read_bio_PUBKEY(bio, nil, nil, nil)
+            CCryptoBoringSSL_PEM_read_bio_PUBKEY(bio, nil, nil, nil)
         }
-        defer { CJWTKitBoringSSL_EVP_PKEY_free(pkey) }
+        defer { CCryptoBoringSSL_EVP_PKEY_free(pkey) }
 
-        guard let c = CJWTKitBoringSSL_EVP_PKEY_get1_RSA(pkey) else {
+        guard let c = CCryptoBoringSSL_EVP_PKEY_get1_RSA(pkey) else {
             throw JWTError.signingAlgorithmFailure(RSAError.keyInitializationFailure)
         }
         return self.init(c, .public)
@@ -20,11 +20,11 @@ public final class RSAKey: OpenSSLKey {
         where Data: DataProtocol
     {
         let pkey = try self.load(pem: data) { bio in
-            CJWTKitBoringSSL_PEM_read_bio_PrivateKey(bio, nil, nil, nil)
+            CCryptoBoringSSL_PEM_read_bio_PrivateKey(bio, nil, nil, nil)
         }
-        defer { CJWTKitBoringSSL_EVP_PKEY_free(pkey) }
+        defer { CCryptoBoringSSL_EVP_PKEY_free(pkey) }
 
-        guard let c = CJWTKitBoringSSL_EVP_PKEY_get1_RSA(pkey) else {
+        guard let c = CCryptoBoringSSL_EVP_PKEY_get1_RSA(pkey) else {
             throw JWTError.signingAlgorithmFailure(RSAError.keyInitializationFailure)
         }
         return self.init(c, .private)
@@ -42,15 +42,15 @@ public final class RSAKey: OpenSSLKey {
         let e = decode(exponent)
         let d = privateExponent.flatMap { decode($0) }
 
-        guard let rsa = CJWTKitBoringSSL_RSA_new() else {
+        guard let rsa = CCryptoBoringSSL_RSA_new() else {
             return nil
         }
 
-        CJWTKitBoringSSL_RSA_set0_key(
+        CCryptoBoringSSL_RSA_set0_key(
             rsa,
-            CJWTKitBoringSSL_BN_bin2bn(n, numericCast(n.count), nil),
-            CJWTKitBoringSSL_BN_bin2bn(e, numericCast(e.count), nil),
-            d.flatMap { CJWTKitBoringSSL_BN_bin2bn($0, numericCast($0.count), nil) }
+            CCryptoBoringSSL_BN_bin2bn(n, numericCast(n.count), nil),
+            CCryptoBoringSSL_BN_bin2bn(e, numericCast(e.count), nil),
+            d.flatMap { CCryptoBoringSSL_BN_bin2bn($0, numericCast($0.count), nil) }
         )
         self.init(rsa, d == nil ? .public : .private)
     }
@@ -68,6 +68,6 @@ public final class RSAKey: OpenSSLKey {
     }
 
     deinit {
-        CJWTKitBoringSSL_RSA_free(self.c)
+        CCryptoBoringSSL_RSA_free(self.c)
     }
 }
