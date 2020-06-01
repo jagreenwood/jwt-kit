@@ -6,17 +6,8 @@
     >
     <br>
     <br>
-    <a href="https://docs.vapor.codes/4.0/">
-        <img src="http://img.shields.io/badge/read_the-docs-2196f3.svg" alt="Documentation">
-    </a>
-    <a href="https://discord.gg/vapor">
-        <img src="https://img.shields.io/discord/431917998102675485.svg" alt="Team Chat">
-    </a>
     <a href="LICENSE">
         <img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
-    </a>
-    <a href="https://github.com/vapor/jwt-kit/actions">
-        <img src="https://github.com/vapor/jwt-kit/workflows/test/badge.svg" alt="Continuous Integration">
     </a>
     <a href="https://swift.org">
         <img src="http://img.shields.io/badge/swift-5.2-brightgreen.svg" alt="Swift 5.2">
@@ -25,6 +16,39 @@
 
 
 <hr>
+
+This is a somewhat permanent fork of Vapor's [JWTKit](https://github.com/vapor/jwt-kit). The purpose of this fork is to add support for iOS. As such the only differences are:
+1. **Does not** include the custom built `CCryptoBoringSSL` variant called `CJWTKitBoringSSL`. 
+2. Supports iOS/watchOS/tvOS
+
+## Basic usage
+
+```swift
+import Foundation
+import JWTKit
+
+public struct AppJWTSigner {
+    private let identity: Identity
+
+    public func jwt(_ audience: Audience) throws -> String {
+        let signer = try JWTSigner.rs256(key: .private(pem: identity.privateKey.bytes))
+        let payload = Payload(iss: IssuerClaim(value: identity.clientEmail),
+                              sub: SubjectClaim(value: identity.clientEmail),
+                              aud: AudienceClaim(value: audience.rawValue),
+                              iat: IssuedAtClaim(value: Date()),
+                              exp: ExpirationClaim(value: Date().addingTimeInterval(3600)))
+
+        let signers = JWTSigners()
+        signers.use(signer, kid: JWKIdentifier(string: identity.privateKeyID), isDefault: true)
+
+        return try signers.sign(payload)
+    }
+
+    public init(_ data: Data) throws {
+        self.identity = try JSONDecoder().decode(Identity.self, from: data)
+    }
+}
+```
 
 **Original author**
 
